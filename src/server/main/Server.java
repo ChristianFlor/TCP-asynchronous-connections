@@ -3,6 +3,11 @@ package server.main;
 import java.util.Calendar;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+
+import client.communication.MessageModel;
+import client.communication.UserModel;
+import server.communication.GenericModel;
 import server.communication.OnMessageListener;
 import server.communication.TCPConnection;
 
@@ -33,6 +38,20 @@ public class Server implements OnMessageListener{
 	@Override
 	public void onMessageReceived(String msg) {
 		System.out.println(msg);
+		Gson g = new Gson();
+		GenericModel model = g.fromJson(msg.trim(),GenericModel.class);
+		System.out.println(model.getType());
+		
+		switch(model.getType()) {
+		case "UserModel":
+			UserModel user = g.fromJson(msg.trim(), UserModel.class);
+			System.out.println(user.getUsername());
+			break;
+		case "MessageModel":
+			MessageModel message =g.fromJson(msg.trim(), MessageModel.class);
+			System.out.println(message.getBody());
+			break;
+		}
 	}
 
 }

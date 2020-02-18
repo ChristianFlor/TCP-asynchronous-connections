@@ -1,9 +1,15 @@
 package client.main;
 
+import java.util.Calendar;
 import java.util.Scanner;
+import java.util.UUID;
 
+import com.google.gson.Gson;
+
+import client.communication.MessageModel;
 import client.communication.OnMessageListener;
 import client.communication.TCPConnection;
+import client.communication.UserModel;
 
 public class Client implements OnMessageListener{
 
@@ -16,7 +22,7 @@ public class Client implements OnMessageListener{
 	public Client() {
 		conexion = TCPConnection.getInstance();
 		conexion.setPuerto(5000);
-		conexion.setServerIp("127.0.0.1");
+		conexion.setServerIp("127.0.0.9");
 		conexion.setObserver(this);
 		conexion.requestConnection();
 		conexion.initReceiver();
@@ -26,7 +32,23 @@ public class Client implements OnMessageListener{
 		
 		Scanner scanner = new Scanner(System.in);
 		while(true) {
+			
 			String line = scanner.nextLine();
+			Gson gson = new Gson();
+			switch(line) {
+			case "message":
+				MessageModel msg= new MessageModel("Este en un mensaje de prueba", Calendar.getInstance().getTime().getTime());
+				
+				String jsonMessage= gson.toJson(msg);
+				conexion.getEmitter().sendMessage(jsonMessage);
+				break;
+			case "user":
+				UserModel user= new UserModel(UUID.randomUUID().toString(), "Rolfman");
+				
+				String jsonUser= gson.toJson(user);
+				conexion.getEmitter().sendMessage(jsonUser);
+				break;
+			}
 			conexion.getEmitter().sendMessage(line);
 		}
 		
